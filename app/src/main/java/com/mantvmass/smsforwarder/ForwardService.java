@@ -15,6 +15,8 @@ import static com.mantvmass.smsforwarder.App.CHANNEL_ID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class ForwardService extends Service implements SMSListenerInterface {
 
     @Override
@@ -62,8 +64,15 @@ public class ForwardService extends Service implements SMSListenerInterface {
     private void onReceive(String from, String message) {
 
         JSONObject postData = new JSONObject();
+
+        long timestamp = System.currentTimeMillis();
+
+        Date date = new Date(timestamp);
+
         try {
-            postData.put("content", "จาก: " + from + " เนื้อหา: " + message);
+            postData.put("from", from);
+            postData.put("message", message);
+            postData.put("timestamp", date.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
