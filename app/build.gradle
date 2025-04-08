@@ -16,9 +16,19 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("path/to/your/keystore/release.keystore") // ตำแหน่งไฟล์ keystore
+            storePassword "your-keystore-password"  // รหัสผ่านของ Keystore
+            keyAlias "your-key-alias"  // ชื่อ alias ของ Key
+            keyPassword "your-key-password"  // รหัสผ่านของ Key
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
