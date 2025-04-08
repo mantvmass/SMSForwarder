@@ -18,7 +18,9 @@ import com.mantvmass.smsforwarder.utils.DatabaseHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,6 +40,7 @@ public class ForwardService extends Service implements SMSListenerInterface {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -85,11 +88,13 @@ public class ForwardService extends Service implements SMSListenerInterface {
         // สร้าง JSON สำหรับส่ง
         JSONObject postData = new JSONObject();
         Date date = new Date(Long.parseLong(timestamp));
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         try {
             postData.put("from", from);
             postData.put("message", message);
-            postData.put("timestamp", date.toString());
+            postData.put("timestamp", isoFormat.format(date));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -101,13 +106,13 @@ public class ForwardService extends Service implements SMSListenerInterface {
         executorService.execute(() -> {
             HTTPService.sendPostRequest(ForwardService.this, url, postData, new HTTPService.VolleyCallback() {
                 @Override
-                public void onSuccess(boolean success) {
+                public void onSuccess(boolean success, String msg) {
                     // แสดง Toast ใน UI thread
                     runOnUiThread(() -> {
                         if (success) {
-                            Toast.makeText(ForwardService.this, "Hook OK.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ForwardService.this, msg, Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(ForwardService.this, "Hook Failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ForwardService.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

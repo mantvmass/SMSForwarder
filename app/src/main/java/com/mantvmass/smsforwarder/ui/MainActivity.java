@@ -120,12 +120,14 @@ public class MainActivity extends AppCompatActivity {
 
     // เริ่มต้น ForwardService เพื่อส่งต่อ SMS
     private void startForwardService() {
+        Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
         Intent serviceIntent = new Intent(this, ForwardService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
     }
 
     // หยุด ForwardService
     private void stopService() {
+        Toast.makeText(this, "Service Stopped", Toast.LENGTH_SHORT).show();
         Intent serviceIntent = new Intent(this, ForwardService.class);
         stopService(serviceIntent);
     }
